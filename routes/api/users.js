@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 
 //get models
 const User = require("../../models/User");
@@ -63,11 +65,24 @@ router.post(
       //await is put infront of everything that gives a promise
 
       //return jsonwebtoken
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
 
-      //when successful
-      res.send("users registered");
+      jwt.sign(
+        payload,
+        config.get("jwtToken"),
+        { expiresIn: 360000 },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
     } catch (err) {
-      console.error(500).send("Server Error!!");
+      console.error(err.message);
+      res.status(500).send("Server error");
     }
   }
 );
