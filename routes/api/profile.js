@@ -8,7 +8,7 @@ const Profile = require("../../models/profile");
 // @route    GET api/profile/me
 // @desc     Get current users profile
 // @access   Public
-router.get("/", auth, async (req, res) => {
+router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findById(req.user.id).populate("user", [
       "name",
