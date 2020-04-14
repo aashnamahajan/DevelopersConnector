@@ -49,7 +49,7 @@ router.post(
         d: "mm", //default   //could also put 400 for an error
       });
 
-      //creating instance of the user
+      //creating instance of the User
       user = new User({
         name,
         email,
