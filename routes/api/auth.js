@@ -51,8 +51,8 @@ router.post(
       }
 
       //encrypt password
-      //const isMatch = await bcrypt.compareSync(password, user.password); //didn't work
-      const isMatch = password == user.password; //works
+      const isMatch = await bcrypt.compareSync(password, user.password); //works
+      //const isMatch = password == user.password; //works
       //password is what user entered which we got from req.body
       //user.password is the password we get from the user's set password in db
 
