@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://Aashna:aashna@cluster0-mytzn.mongodb.net/test?retryWrites=true&w=majority",
-  "jwtToken": "mySectretToken"
+  "jwtToken": "mySectretToken",
+  "githubClientId": "2b331a344e4ca9ffd679",
+  "githubClientSecret": "eefadcfa9b0bcc73ccf671fa183b209ae73c70c1"
 }
