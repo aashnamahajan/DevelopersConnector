@@ -250,4 +250,86 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
   }
 });
 
+// @route    PUT api/profile/education
+// @desc     Add profile education
+// @access   Private
+router.put(
+  "/education",
+  [
+    auth,
+    [
+      check("school", "School is required").not().isEmpty(),
+      check("degree", "Degree is required").not().isEmpty(),
+      check("fieldofstudy", "Field of study is required").not().isEmpty(),
+      check("from", "From date is required").not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty) {
+      res.status(400).json({ errors: errors.array() });
+    }
+
+    //getting values from req.body
+    const {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description,
+    } = req.body;
+
+    //creating an object with the data that user submits
+    const newEdu = {
+      school,
+      degree,
+      fieldofstudy,
+      from,
+      to,
+      current,
+      description,
+    };
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      profile.education.unshift(newEdu);
+      //unshift pushes the entry to the beginning. so the most recent can be seen first
+
+      await profile.save();
+
+      res.json(profile);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send("server error");
+    }
+  }
+);
+
+// @route    DELETE api/profile/education/:edu_id
+// @desc     Delete an education from the profile
+// @access   Private
+router.delete("/education/:edu_id", auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+
+    //get index of the item to be removed
+    const removeIndex = profile.education
+      .map((item) => item.id)
+      .indexOf(req.params.edu_id);
+
+    //using splice to take something out (here taking an experience out)
+    profile.education.splice(removeIndex, 1);
+
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
+
 module.exports = router;
