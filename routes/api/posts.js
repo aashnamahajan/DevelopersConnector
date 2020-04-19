@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { check, validationResult } = require("express-validator/check");
+const { check, validationResult } = require("express-validator");
 const auth = require("../../middleware/auth");
 
 const Post = require("../../models/Post");
@@ -38,5 +38,68 @@ router.post(
     }
   }
 );
+
+// @route    GET  api/posts
+// @desc     get all posts
+// @access   Private
+
+router.get("/", auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 });
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send("server error");
+  }
+});
+
+// @route    GET  api/posts/:id
+// @desc     get post by id
+// @access   Private
+
+router.get("/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      res.status(404).json({ msg: "Post not found" });
+    }
+    res.json(post);
+  } catch (err) {
+    console.log(err.message);
+    if (err.kind === "ObjectId") {
+      res.status(404).json({ msg: "Post not found" });
+    }
+    res.status(500).send("server error");
+  }
+});
+
+// @route    DELETE api/posts/:id
+// @desc     Delete a post
+// @access   Private
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      res.status(404).json({ msg: "Post not found" });
+    }
+
+    //check user (user that is deleting a post, should be the user who had the post )
+    if (post.user.toString() !== req.user.id) {
+      res.status(401).json({ msg: "User not authorized" });
+    }
+
+    await post.remove();
+
+    res.json({ msg: "Post removed" });
+  } catch (err) {
+    console.log(err.message);
+    if (err.kind === "ObjectId") {
+      res.status(404).json({ msg: "Post not found" });
+    }
+    res.status(500).send("server error");
+  }
+});
 
 module.exports = router;
