@@ -1,4 +1,4 @@
-//racf (shortcut to create the basic structural component here)
+//racf (shortcut to create the basic structural component here) or rfce
 import React from "react";
 import { Link } from "react-router-dom";
 
